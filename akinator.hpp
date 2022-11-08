@@ -24,5 +24,9 @@ void clear_input_buff();
 void definition(Node *node);
 void find_elem(Node *node, stack *stk_defin, tree_elem_t search_elem);
 
+void graph_dump(FILE *dot_file, Node *node, Node *node_son);
+void dump(Node *root);
+
+
 
 #endif

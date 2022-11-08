@@ -34,8 +34,7 @@ int main() {
         } 
 
         case TREE_OUTPUT: {
-            // printf_tree(tree.root_tree);
-            // тут граф
+            dump(tree.root_tree);
             break;
         }
 

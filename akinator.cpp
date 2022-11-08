@@ -1,9 +1,9 @@
 #include "akinator.hpp"
 const int MAX_SIZE = 30;
 const char *NAME_FILE = "/mnt/c/Users/User/Desktop/programs/akinator/test.txt";
+const char *NAME_GRAPH_FILE = "/mnt/c/Users/User/Desktop/programs/akinator/graph.dot";
 
-FILE *file_tree  = fopen(NAME_FILE, "w");
-
+FILE *file_tree = fopen(NAME_FILE, "w");
 void print_mode() {
     printf("Выбери режим работы:\n");
     printf("\t[1]угадывание\n");
@@ -51,13 +51,18 @@ void create_tree(const char *FILE_INPUT, Tree *tree) {
 Node *create_tree_from_text(Node *node, char **text_buf) {
 
     if (**text_buf == '{') {
+
         char *elem = (char *) calloc(MAX_SIZE, sizeof(char));
+
         for (; **text_buf != '\"' && **text_buf != '\0'; (*text_buf)++) continue;
+
         (*text_buf)++;
 
         char *point = elem;
+
         for (; **text_buf != '\"' && **text_buf != '\0'; (*text_buf)++, elem++) *elem = **text_buf; 
         elem = point;
+
         for (; **text_buf != '{' && **text_buf != '}' && **text_buf != '\0'; (*text_buf)++) continue;
     
         node = tree_add_elem(node, elem);
@@ -65,6 +70,7 @@ Node *create_tree_from_text(Node *node, char **text_buf) {
         if (**text_buf == '}' || **text_buf == '\0') {
             return node;
         }
+
         node->left = create_tree_from_text(node->left, text_buf);
 
         for (; **text_buf != '{' && **text_buf != '\0'; (*text_buf)++) continue;
@@ -104,11 +110,12 @@ Node *tree_add_elem(Node *node, tree_elem_t elem) {
         node->left = NULL;
         node->right = NULL;
 
-    } else if (elem < node->elem_tree) {
-        node->left = tree_add_elem(node->left, elem);
-    } else if (elem >= node->elem_tree) {
-        node->right = tree_add_elem(node->right, elem);
-    }
+    } 
+    // else if (elem < node->elem_tree) {
+    //     node->left = tree_add_elem(node->left, elem);
+    // } else if (elem >= node->elem_tree) {
+    //     node->right = tree_add_elem(node->right, elem);
+    // }
     return node;
 }
 
@@ -126,6 +133,7 @@ static char *delete_symbol(char *s, char c) {
     }
     return s;
 }
+
 void guessing(Node *node) {
 
     if (!node) return;
@@ -152,6 +160,7 @@ void guessing(Node *node) {
             guessing(node->left);
         }
     }
+
     if (strcmp(answer, "нет") == 0) {
         if (!node->left && !node->right) {
             printf("как так.. я что не угадала?...\nтогда кто это?\n");
@@ -169,8 +178,6 @@ void guessing(Node *node) {
             node->left = tree_add_elem(node->left, new_elem);
             // printf("%s %s %s", sign_difference, new_elem, node->elem_tree);
             node->elem_tree = sign_difference;
-            // проблема в том что не меняется нормально ничегооо блять 
-
         } else {
             guessing(node->right);
         }
@@ -189,6 +196,38 @@ void definition(Node *node) {
 
     // find_elem(node, &stk_defin, search_elem);
     
+}
+static int number_png = 0;
+void dump(Node *root) {
+
+    assert(root != nullptr && "null pointer tree");
+    FILE *dot_file = fopen(NAME_GRAPH_FILE, "w");
+
+    fprintf(dot_file,"digraph {\n");
+    graph_dump(dot_file, root, root->left);
+    graph_dump(dot_file, root, root->right);
+    fprintf(dot_file,"}\n");
+
+    fclose(dot_file);
+    const int size_cmd = 100; 
+    char cmd[size_cmd] = "";
+    sprintf(cmd, "dot graph.dot -Tpng -o output%d.png", number_png);
+
+    number_png++;
+    system(cmd);
+    
+}
+
+void graph_dump(FILE *dot_file, Node *node, Node *node_son) {
+
+    if (!node_son) {
+        return;
+    }
+    if (node) {
+        fprintf(dot_file, "\t%s -> %s\n", node->elem_tree, node_son->elem_tree);
+        graph_dump(dot_file, node_son, node_son->left);
+        graph_dump(dot_file, node_son, node_son->right);
+    }
 }
 
 // Node *find_elem(Node *node, stack *stk_defin, tree_elem_t search_elem) {
