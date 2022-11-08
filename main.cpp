@@ -24,7 +24,7 @@ int main() {
             break;
         }
         case DEFINITION: {
-
+            // definition(tree.root_tree);
             break;
         } 
 

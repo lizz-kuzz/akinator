@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <math.h>
 
-#include "../tree/utils_tree.hpp"
+#include "../utils.hpp"
 
 #define MODE_RELEASE        1 
 #define MODE_CANARY_ON      2
@@ -24,7 +24,7 @@
 // #ifdef DEBUG
 //     #define MODE MODE_HASH_CANARY_ON
 // #endif
-#define MODE MODE_HASH_ON
+#define MODE MODE_RELEASE
 #define MULTIPLE       2
 
 
@@ -53,7 +53,8 @@
 
 
 typedef unsigned long long elem_canary_t;
-typedef Node const *         elem_data_t;
+typedef path_search_elem *   elem_data_t;
+
 #define POIZON 0
 
 enum FILE_STATUS {

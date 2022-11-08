@@ -24,6 +24,10 @@ struct Tree {
     Node *root_tree;
 };
 
+typedef struct {
+    Node *node;
+    bool answer;
+} path_search_elem;
 
 
 #endif
