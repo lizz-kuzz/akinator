@@ -3,7 +3,7 @@
 #include "akinator.hpp"
 
 int main() {
-    // потом нужен сделать файл через командную строку
+    // потом нужно сделать файл через командную строку
    
     int command = 0;
 
@@ -17,38 +17,36 @@ int main() {
 
     while (command != 5) {
     command = input_comand();
-    switch (command)
-    {
-        case GUESSING: {
-            guessing(tree.root_tree);
-            break;
-        }
-        case DEFINITION: {
-            // definition(tree.root_tree);
-            break;
-        } 
+        switch (command)
+        {
+            case GUESSING: {
+                guessing(tree.root_tree);
+                break;
+            }
+            case DEFINITION: {
+                definition(tree.root_tree);
+                break;
+            } 
 
-        case COMPARATION: {
+            case COMPARATION: {
 
-            break;
-        } 
+                break;
+            } 
 
-        case TREE_OUTPUT: {
-            dump(tree.root_tree);
-            break;
-        }
+            case TREE_OUTPUT: {
+                dump(tree.root_tree);
+                break;
+            }
 
-        case EXIT: {
-
-            break;
-        }
-
-    
-        default: {
-            break;
+            case EXIT: {
+                printf_tree(tree.root_tree);
+                dtor(tree.root_tree);
+                break;
+            }
+            default:
+                break;
         }
     }
-    }
-    printf_tree(tree.root_tree);
+ 
     return 0;
 }

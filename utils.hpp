@@ -18,6 +18,7 @@ struct Node {
     tree_elem_t elem_tree;
     Node *left;
     Node *right;
+    Node *parent;
 };
 
 struct Tree {

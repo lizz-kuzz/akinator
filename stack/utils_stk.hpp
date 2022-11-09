@@ -53,9 +53,9 @@
 
 
 typedef unsigned long long elem_canary_t;
-typedef path_search_elem *   elem_data_t;
+typedef Node*     elem_data_t;
 
-#define POIZON 0
+#define POIZON NULL
 
 enum FILE_STATUS {
     FILE_CLOSE     = 0,
@@ -83,7 +83,7 @@ typedef struct {
     ON_CANARY     (elem_canary_t canaries_left;)
     ON_DEBUG_INFO (stack_info info;)
 
-    elem_data_t         *data;
+    elem_data_t        *data;
     size_t              size;
     size_t              capacity;
 

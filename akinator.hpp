@@ -11,22 +11,24 @@
 #include "file.hpp"
 
 void  create_tree(const char *FILE_INPUT, Tree *tree);
-Node *create_tree_from_text(Node *node, char **text_buf);
-Node *tree_add_elem(Node *node, tree_elem_t elem);
+Node *create_tree_from_text(Node *node, Node *parent, char **text_buf);
+
+Node *tree_add_elem(Node *node, Node *parent, tree_elem_t elem);
 
 COMMAND input_comand();
 void print_mode();
 void print_question(Node *node);
-void printf_tree(Node *node);
-void guessing(Node *node);
+
 void clear_input_buff(); 
 
+void guessing(Node *node);
 void definition(Node *node);
-void find_elem(Node *node, stack *stk_defin, tree_elem_t search_elem);
+Node *find_elem(Node *node, tree_elem_t search_elem);
 
+void printf_tree(Node *node);
 void graph_dump(FILE *dot_file, Node *node, Node *node_son);
 void dump(Node *root);
 
-
+void dtor(Node *node);
 
 #endif
