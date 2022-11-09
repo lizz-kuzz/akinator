@@ -29,7 +29,7 @@ int main() {
             } 
 
             case COMPARATION: {
-
+                comparation(tree.root_tree);                
                 break;
             } 
 

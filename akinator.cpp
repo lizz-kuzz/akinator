@@ -42,6 +42,7 @@ Node *create_tree_from_text(Node *node, Node *parent, char **text_buf) {
         if (**text_buf == '}' || **text_buf == '\0') {
             return node;
         }
+        // free(elem);
 
         node->left = create_tree_from_text(node->left, node, text_buf);
 
@@ -91,28 +92,11 @@ Node *tree_add_elem(Node *node, Node *parent, tree_elem_t elem) {
 void create_defin(Node *node, tree_elem_t elem) {
     assert(node != nullptr && "null pointer node");
     stack defin = {};
-    stack_ctor(defin, 5);
-
-    while (node->parent != NULL) {
-
-    path_search_elem path = {};
-        path.node = node->parent;
-
-        if (node == path.node->left) path.answer = true;
-        else path.answer = false;
-
-        stack_push(&defin, path);
-
-        node = node->parent;
-
-    }
-
-
-    int size = defin.size;
+    
+    create_path(node, &defin);
 
     printf("%s - это ", elem);
     
-    // for (int i = 0; i < size; i++)
     while (defin.size) {
         path_search_elem path = stack_pop(&defin);
 
@@ -122,12 +106,108 @@ void create_defin(Node *node, tree_elem_t elem) {
             printf("не %s", path.node->elem_tree);
         }
 
-        // if (i == size - 1) printf(".\n");
         if (defin.size == 0) printf(".\n");
         else printf(", ");
-        
     }
+}
+
+void create_path(const Node *node, stack* defin) {
+
+    assert(node != nullptr && "null pointer node");
+    assert(defin != nullptr && "null pointer node");
+
+    stack_ctor(*defin, 5);
+
+    while (node->parent != NULL) {
+        path_search_elem path = {};
+        path.node = node->parent;
+
+        if (node == path.node->left) path.answer = true;
+        else path.answer = false;
+
+        stack_push(defin, path);
+
+        node = node->parent;
+    }
+}
+
+void create_comparation(const Node *node_1, const Node *node_2, const tree_elem_t elem_1, const tree_elem_t elem_2) {
+    assert(node_1 != nullptr && "null pointer node");
+    assert(node_2 != nullptr && "null pointer node");
     
+    stack defin_1 = {};
+    stack defin_2 = {};
+
+    create_path(node_1, &defin_1);
+    create_path(node_2, &defin_2);
+    printf("я провела очень сложный анализ и выяснила, что %s и %s\n", elem_1, elem_2);
+
+    // while (defin_1.size != 0 || defin_2.size != 0) {
+
+        path_search_elem path_1 = stack_pop(&defin_1);
+        path_search_elem path_2 = stack_pop(&defin_2);
+
+        if (path_1.answer == path_2.answer && path_1.node == path_2.node) {
+
+            printf("похожи тем, что оба:");
+
+            while (path_1.answer == path_2.answer && path_1.node == path_2.node) {
+                if (path_1.answer ==  true) {
+                    printf("%s", path_1.node->elem_tree);
+                } else {
+                    printf("не %s", path_1.node->elem_tree);
+                }
+                path_1 = stack_pop(&defin_1);
+                path_2 = stack_pop(&defin_2);
+            }
+            printf("\n");
+        } else {
+            printf("ничем не похожи\n");
+        }       
+
+        printf("но первый элемент:\n");
+    //       printf("%s - это ", elem);
+    
+    // while (defin.size) {
+    //     path_search_elem path = stack_pop(&defin);
+
+    //     if (path.answer ==  true) {
+    //         printf("%s", path.node->elem_tree);
+    //     } else {
+    //         printf("не %s", path.node->elem_tree);
+    //     }
+
+    //     if (defin.size == 0) printf(".\n");
+    //     else printf(", ");
+    // }
+        while (defin_1.size != 0) {
+            if (path_1.answer ==  true) {
+                printf("%s", path_1.node->elem_tree);
+            } else {
+                printf("не %s", path_1.node->elem_tree);
+            }
+
+            if (defin_1.size == 0) printf(".\n");
+            else printf(", ");
+
+            path_1 = stack_pop(&defin_1);
+        } 
+
+        printf("а второй элемент:\n");
+
+        do {
+            if (path_2.answer ==  true) {
+                printf("%s", path_2.node->elem_tree);
+            } else {
+                printf("не %s", path_2.node->elem_tree);
+            }
+
+            if (defin_2.size == 0) printf(".\n");
+            else printf(", ");
+
+            path_2 = stack_pop(&defin_2);
+        } while (defin_1.size != 0);
+    // }
 }
 
 
@@ -139,15 +219,12 @@ Node *find_elem(Node *node, tree_elem_t search_elem) {
     if (strcmp(node->elem_tree, search_elem) == 0) {
         return node;
     }
-    else if (strcmp(node->elem_tree, search_elem) != 0) {
+    Node *tmp = find_elem(node->left, search_elem);
 
-        Node *tmp = find_elem(node->left, search_elem);
-
-        if (tmp == NULL) {
-            tmp = find_elem(node->right, search_elem);
-            return tmp;
-        }
+    if (tmp == NULL) {
+        tmp = find_elem(node->right, search_elem);
     } 
+        return tmp;
 }
 
 void dump(Node *root) {
@@ -176,7 +253,7 @@ void graph_dump(FILE *dot_file, Node *node, Node *node_son) {
         return;
     }
     if (node) {
-        fprintf(dot_file, "\t%s -> %s\n", node->elem_tree, node_son->elem_tree);
+        fprintf(dot_file, "\t\"%s\" -> \"%s\"\n", node->elem_tree, node_son->elem_tree);
         graph_dump(dot_file, node_son, node_son->left);
         graph_dump(dot_file, node_son, node_son->right);
     }

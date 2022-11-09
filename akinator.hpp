@@ -17,7 +17,9 @@ void clear_input_buff();
 
 Node *find_elem(Node *node, tree_elem_t search_elem);
 void create_defin(Node *node, tree_elem_t elem);
+void create_comparation(const Node *node_1, const Node *node_2, const tree_elem_t elem_1, const tree_elem_t elem_2);
 
+void create_path(const Node *node, stack* defin);
 void printf_tree(Node *node);
 void graph_dump(FILE *dot_file, Node *node, Node *node_son);
 void dump(Node *root);

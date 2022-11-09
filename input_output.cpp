@@ -54,7 +54,6 @@ void guessing(Node *node) {
             new_elem = delete_symbol(new_elem, '\n');
     
             printf("и чем же %s отличается от %s?\n", new_elem, node->elem_tree);
-            printf("вместо пробелов, пожалуйста, используйте \'_\' (функция графического дампа в разработке)\n");
             // scanf("%40s", sign_difference);
 
             fgets(sign_difference, MAX_SIZE, stdin);
@@ -129,4 +128,28 @@ void print_question(Node *node) {
     } else {
         printf("это %s?\n", node->elem_tree);
     }
+}
+
+void comparation(Node *node) {
+    assert(node != nullptr && "null pointer node");
+
+    printf("введите названия объектов, которые хотите сравнить:\n");
+    char *compare_elem_1 = (char *) calloc(MAX_SIZE, sizeof(char));
+    char *compare_elem_2 = (char *) calloc(MAX_SIZE, sizeof(char));
+
+    scanf("%40s", compare_elem_1);
+    scanf("%40s", compare_elem_2);
+    
+    Node *node_search_elem_1 = find_elem(node, compare_elem_1);
+    Node *node_search_elem_2 = find_elem(node, compare_elem_2);
+    
+    if (!node_search_elem_1 || !node_search_elem_2) {
+        printf("чел, походу ты сам не знаешь, что ищешь!\nв моей базе нет такого объекта\n");
+    } else {
+        create_comparation(node_search_elem_1, node_search_elem_2, compare_elem_1, compare_elem_2);
+    }
+    clear_input_buff(); 
+    // поменять на flash чего-то там
+    free(compare_elem_1);
+    free(compare_elem_2);
 }

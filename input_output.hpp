@@ -10,6 +10,8 @@ COMMAND input_comand();
 void print_mode();
 void print_question(Node *node);
 
+void comparation(Node *node);
+
 
 void guessing(Node *node);
 void definition(Node *node);
