@@ -53,7 +53,7 @@
 
 
 typedef unsigned long long elem_canary_t;
-typedef Node*     elem_data_t;
+typedef path_search_elem     elem_data_t;
 
 #define POIZON NULL
 

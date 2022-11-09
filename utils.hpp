@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+
+const int MAX_SIZE = 40;
+
+
 enum COMMAND {
     GUESSING = 1,
     DEFINITION = 2,

@@ -1,39 +1,10 @@
 #include "akinator.hpp"
-const int MAX_SIZE = 40;
 const char *NAME_FILE = "/mnt/c/Users/User/Desktop/programs/akinator/test.txt";
 const char *NAME_GRAPH_FILE = "/mnt/c/Users/User/Desktop/programs/akinator/graph.dot";
 static int number_png = 0;
 
 FILE *file_tree = fopen(NAME_FILE, "w");
 
-void print_mode() {
-    printf("Выбери режим работы:\n");
-    printf("\t[1]угадывание\n");
-    printf("\t[2]определение\n");
-    printf("\t[3]сравнение\n");
-    printf("\t[4]вывод дерева\n");
-    printf("\t[5]выход\n");
-}
-
-COMMAND input_comand() {
-
-    int command = 0;
-    int is_continue_input = 1;
-
-    while (is_continue_input) {
-
-        print_mode();
-
-        if (scanf("%d", &command) != 1 || command < GUESSING || command > EXIT) {
-            printf("попробуйте еще раз, вы ввели неверное значение(научись читать)\n");
-            clear_input_buff();            
-        } else {
-            is_continue_input = 0;
-        }
-    }
-
-    return (enum COMMAND)command;
-}
 
 void clear_input_buff() {
     while (getchar() != '\n') {}
@@ -110,8 +81,6 @@ Node *tree_add_elem(Node *node, Node *parent, tree_elem_t elem) {
         node->elem_tree = (tree_elem_t) calloc(MAX_SIZE, sizeof(char));
         node->elem_tree = strcpy(node->elem_tree, elem);
 
-        // node->elem_tree = elem;
-        printf("elem %s\n", node->elem_tree);
         node->left = NULL;
         node->right = NULL;
         node->parent = parent;
@@ -119,118 +88,55 @@ Node *tree_add_elem(Node *node, Node *parent, tree_elem_t elem) {
     return node;
 }
 
-void print_question(Node *node) {
-    if (node->left == NULL && node->right == NULL) {
-        printf("это %s?????\nскажи, что да скажи, что да скажи, что да!!!\n", node->elem_tree);
-    } else {
-        printf("это %s?\n", node->elem_tree);
-    }
-}
-
-static char *delete_symbol(char *s, char c) {
-    assert(s != NULL && "null pointer");
-    char *point = s;
-
-    for (; *point != '\0'; point++) {
-        if (*point == c) {
-            *point = '\0';
-        }
-    }
-    return s;
-}
-
-void guessing(Node *node) {
-
-    if (!node) return;
-
-    print_question(node);
-
-    char answer[MAX_SIZE] = "";
-
-    int is_continue_input = 1;
-
-    while (is_continue_input) {
-        if (scanf("%s", answer) != 1 || (strcmp(answer, "да") != 0 && strcmp(answer, "нет") != 0)) {
-            printf("попробуйте еще раз, вы ввели неверное значение\n");
-            clear_input_buff();            
-        } else {
-            is_continue_input = 0;
-        }
-    }
-    
-    if (strcmp(answer, "да") == 0) {
-        if (!node->left && !node->right) {
-            printf("ура, я как всегда права!\n");
-            clear_input_buff();            
-        } else {
-            guessing(node->left);
-        }
-    }
-
-    if (strcmp(answer, "нет") == 0) {
-        if (!node->left && !node->right) {
-            printf("как так.. я что не угадала?...\nтогда кто это?\n");
-            clear_input_buff();            
-
-            char *new_elem = (char *) calloc(MAX_SIZE, sizeof(char));
-            char *sign_difference = (char *) calloc(MAX_SIZE, sizeof(char));
-
-            // scanf("%s", new_elem);
-            new_elem = fgets(new_elem, MAX_SIZE, stdin);
-            new_elem = delete_symbol(new_elem, '\n');
-    
-            printf("и чем же %s отличается от %s?\n", new_elem, node->elem_tree);
-            printf("вместо пробелов, пожалуйста, используйте \'_\' (функция в разработке)\n");
-            // scanf("%40s", sign_difference);
-
-            fgets(sign_difference, MAX_SIZE, stdin);
-            sign_difference = delete_symbol(sign_difference, '\n');
-
-            node->right = tree_add_elem(node->right, node, node->elem_tree);
-            node->left = tree_add_elem(node->left, node, new_elem);
-            node->elem_tree = strcpy(node->elem_tree, sign_difference);
-
-            
-            // printf("%s %s %s\n", sign_difference, new_elem, node->elem_tree);
-            // printf("%s\n", node->elem_tree);
-
-
-            free(new_elem);
-            free(sign_difference);
-        } else {
-            guessing(node->right);
-        }
-    }
-}
-// ааааааааааааа
-
-void definition(Node *node) {
+void create_defin(Node *node, tree_elem_t elem) {
     assert(node != nullptr && "null pointer node");
+    stack defin = {};
+    stack_ctor(defin, 5);
 
-    printf("введите название, которому хотите дать определение:\n");
-    char *search_elem = (char *) calloc(MAX_SIZE, sizeof(char));
-    scanf("%s", search_elem);
-    
-    Node *node_search = find_elem(node, search_elem);
-    
-    if (node == NULL) {
-        printf("ничего не нашли");
-    } else printf("%s - это ", node_search->elem_tree);
+    while (node->parent != NULL) {
 
-    while (node_search->parent != NULL) {
-        node_search = node_search->parent;
-        printf("%s, ", node_search->elem_tree);
+    path_search_elem path = {};
+        path.node = node->parent;
+
+        if (node == path.node->left) path.answer = true;
+        else path.answer = false;
+
+        stack_push(&defin, path);
+
+        node = node->parent;
+
     }
 
-    free(search_elem);
+
+    int size = defin.size;
+
+    printf("%s - это ", elem);
+    
+    // for (int i = 0; i < size; i++)
+    while (defin.size) {
+        path_search_elem path = stack_pop(&defin);
+
+        if (path.answer ==  true) {
+            printf("%s", path.node->elem_tree);
+        } else {
+            printf("не %s", path.node->elem_tree);
+        }
+
+        // if (i == size - 1) printf(".\n");
+        if (defin.size == 0) printf(".\n");
+        else printf(", ");
+        
+    }
     
 }
+
+
+
 
 Node *find_elem(Node *node, tree_elem_t search_elem) {
     if (!node) return node;
 
     if (strcmp(node->elem_tree, search_elem) == 0) {
-        printf("search %s\n", node->elem_tree);
         return node;
     }
     else if (strcmp(node->elem_tree, search_elem) != 0) {

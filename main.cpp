@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include "input_output.hpp"
 #include "akinator.hpp"
 
 int main() {
