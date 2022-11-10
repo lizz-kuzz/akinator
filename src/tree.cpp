@@ -45,27 +45,34 @@ Node *create_tree_from_text(Node *node, Node *parent, char **text_buf) {
     return node;
 }
 static int count_space = 0;
+
 void printf_tree(Node *node) {
 
     if (!node) return;
 
     if (!node->left && !node->right) {
-        fprintf(file_tree, "%*s{\"%s\"}\n", " ", count_space, node->elem_tree);
+        for (int i = 0; i < count_space; i++) fprintf(file_tree, " ");
+
+        fprintf(file_tree, "{\"%s\"}\n", node->elem_tree);
+
     } else {
 
-        fprintf(file_tree, "%*s{", " ", count_space);
+        for (int i = 0; i < count_space; i++) fprintf(file_tree, " ");
+
+        fprintf(file_tree, "{");
         fprintf(file_tree, "\"%s\"\n", node->elem_tree);
 
         if (node->left) {
-            count_space *= 2;
+            count_space += 4;
             printf_tree(node->left);
         }
 
         if (node->right) {
-            count_space /= 2;
 
             printf_tree(node->right);
+            count_space -= 4;
 
+            for (int i = 0; i < count_space; i++) fprintf(file_tree, " ");
             fprintf(file_tree, "}\n");
         }
     }
