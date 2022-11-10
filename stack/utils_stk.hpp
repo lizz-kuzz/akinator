@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <math.h>
 
-#include "../utils.hpp"
+#include "../include/utils.hpp"
 
 #define MODE_RELEASE        1 
 #define MODE_CANARY_ON      2

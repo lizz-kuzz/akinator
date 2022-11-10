@@ -9,5 +9,5 @@ tree:
 	@$(CC) $(FLAGS) tree/main.cpp tree/tree_func.cpp stack/stack.cpp stack/debug.cpp -o tree.exe
 
 akin:
-	@$(CC) $(FLAGS) main.cpp input_output.cpp akinator.cpp file.cpp stack/stack.cpp -o akin.exe
+	@$(CC) $(FLAGS) src/main.cpp src/tree.cpp src/akinator.cpp src/file.cpp stack/stack.cpp -o akin.exe
 
