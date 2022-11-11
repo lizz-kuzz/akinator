@@ -27,5 +27,6 @@ void create_path(const Node *node, stack* defin);
 void graph_dump(FILE *dot_file, Node *node, Node *node_son);
 void dump(Node *root);
 
+void create_file_path(char *FILE_PROG, char *path, char *name_file);
 
 #endif

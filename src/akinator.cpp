@@ -4,6 +4,22 @@
 const char *NAME_GRAPH_FILE = "/mnt/c/Users/User/Desktop/programs/akinator/res/graph.dot";
 static int number_png = 0;
 
+void create_file_path(char *FILE_PROG, char *path, char *name_file) {
+    assert(path      != nullptr && "null pointer");
+    assert(name_file != nullptr && "null pointer");
+    assert(FILE_PROG != nullptr && "null pointer");
+
+    char *save_point = FILE_PROG;
+
+    for (; *path != '\0'; path++, save_point++) {
+        *save_point = *path;
+    }
+    for (; *name_file != '\0'; name_file++, save_point++) {
+        *save_point = *name_file;
+    }
+    *save_point = '\0';
+
+}
 
 void clear_input_buff() {
     while (getchar() != '\n') {}
@@ -148,7 +164,7 @@ void dump(Node *root) {
     const int size_cmd = 100; 
     char cmd[size_cmd] = "";
     
-    sprintf(cmd, "dot res/graph.dot -Tpng -o res/output%d.png", number_png);
+    sprintf(cmd, "dot res/graph.dot -Tpng -o res/output%d.png 2>text_error.txt", number_png);
 
     number_png++;
     system(cmd);
