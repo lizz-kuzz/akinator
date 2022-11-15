@@ -160,13 +160,14 @@ void dump(Node *root) {
 }
 
 void graph_dump(FILE *dot_file, Node *node, Node *node_son) {
-
+    
     if (!node_son) {
         return;
     }
-
     if (node) {
-        fprintf(dot_file, "\t\"%s\" -> \"%s\"\n", node->elem_tree, node_son->elem_tree);
+        fprintf(dot_file, "\tnode%p[label=\"%s\"]\n", node, node->elem_tree);
+        fprintf(dot_file, "\tnode%p[label=\"%s\"]\n", node_son, node_son->elem_tree);
+        fprintf(dot_file, "\tnode%p -> node%p\n", node, node_son);
 
         graph_dump(dot_file, node_son, node_son->left);
         graph_dump(dot_file, node_son, node_son->right);
@@ -197,7 +198,7 @@ int find_char(char * text, char symbol) {
 int check_answer(char *new_elem) {
     char *point = new_elem;
 
-    if (find_char(point, '\n') || find_char(point, '\"') || find_char(point, '\'') || find_char(point, '\t') || find_char(point, ' ')) {
+    if (find_char(point, '\n') || find_char(point, '\"') || find_char(point, '\'') || find_char(point, '\t')) {
         return 1;
     } else
         return 0;
