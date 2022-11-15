@@ -1,7 +1,8 @@
 #ifndef FILE_HPP_INCLUDED
 #define FILE_HPP_INCLUDED
-#include "utils.hpp"
+#include "tree.hpp"
 
+void     create_file_path       (char *FILE_PROG, char *path, char *name_file);
 
 long int count_symbols          (FILE *file_input);
 

@@ -5,9 +5,7 @@ FLAGS = -g -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-e
 		-Wtype-limits -Wwrite-strings -D_DEBUG
 СС = g++
 
-tree:
-	@$(CC) $(FLAGS) tree/main.cpp tree/tree_func.cpp stack/stack.cpp stack/debug.cpp -o tree.exe
 
-akin:
-	@$(CC) $(FLAGS) src/main.cpp src/tree.cpp src/akinator.cpp src/file.cpp stack/stack.cpp -o akin.exe
+all:
+	@$(CC) $(FLAGS) src/main.cpp stack/stack.cpp src/tree_function.cpp src/akinator.cpp src/file.cpp -o akin.exe
 

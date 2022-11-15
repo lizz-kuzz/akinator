@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <math.h>
 
-#include "../include/utils.hpp"
+#include "../include/tree.hpp"
 
 #define MODE_RELEASE        1 
 #define MODE_CANARY_ON      2
@@ -53,7 +53,7 @@
 
 
 typedef unsigned long long elem_canary_t;
-typedef path_search_elem     elem_data_t;
+typedef Node *             elem_data_t;
 
 #define POIZON NULL
 

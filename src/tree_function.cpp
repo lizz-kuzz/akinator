@@ -1,4 +1,5 @@
-#include "../include/tree.hpp"
+#include "../include/tree_function.hpp"
+
 
 const char *NAME_FILE = "/mnt/c/Users/User/Desktop/programs/akinator/res/test.txt";
 FILE *file_tree = fopen(NAME_FILE, "w");
@@ -8,7 +9,9 @@ void create_tree(const char *FILE_INPUT, Tree *tree) {
 
     text_buf = read_file(FILE_INPUT, text_buf);
     char *point_text_buf = text_buf;
+
     tree->root_tree = create_tree_from_text(tree->root_tree, NULL, &point_text_buf);
+
     free(text_buf);
 }
 
@@ -44,6 +47,7 @@ Node *create_tree_from_text(Node *node, Node *parent, char **text_buf) {
 
     return node;
 }
+
 static int count_space = 0;
 
 void printf_tree(Node *node) {
@@ -68,7 +72,6 @@ void printf_tree(Node *node) {
         }
 
         if (node->right) {
-
             printf_tree(node->right);
             count_space -= 4;
 
@@ -80,29 +83,41 @@ void printf_tree(Node *node) {
 
 Node *tree_add_elem(Node *node, Node *parent, tree_elem_t elem) {
 
-    if (node == NULL) {
-        node = (Node *) calloc(1, sizeof(Node));
-        node->elem_tree = (tree_elem_t) calloc(MAX_SIZE, sizeof(char));
-        node->elem_tree = strcpy(node->elem_tree, elem);
+    node = (Node *) calloc(1, sizeof(Node));
+    node->elem_tree = (tree_elem_t) calloc(MAX_SIZE, sizeof(char));
+    node->elem_tree = strcpy(node->elem_tree, elem);
 
-        node->left = NULL;
-        node->right = NULL;
-        node->parent = parent;
-    }
+    node->left = NULL;
+    node->right = NULL;
+    node->parent = parent;
+
     return node;
 }
 
-Node *find_elem(Node *node, tree_elem_t search_elem) {
+Node *tree_find_elem(Node *node, stack *stk_search, tree_elem_t search_elem) {
 
     if (!node) return node;
 
+    stack_push(stk_search, node);
+
     if (strcmp(node->elem_tree, search_elem) == 0) return node;
     
-    Node *tmp = find_elem(node->left, search_elem);
+    if (node->left) {
+        if (tree_find_elem(node->left, stk_search, search_elem)) {
+            return stk_search->data[stk_search->size - 1];
+        } 
+    }
 
-    if (tmp == NULL) tmp = find_elem(node->right, search_elem);
+    if (node->right) {
+        if (tree_find_elem(node->right, stk_search, search_elem)) {
+            return stk_search->data[stk_search->size - 1];
+        }
+    }
 
-    return tmp;
+    stack_pop(stk_search);
+
+    return NULL;
+
 }
 
 void dtor(Node *node) {
@@ -111,15 +126,12 @@ void dtor(Node *node) {
     free(node->elem_tree);
     node->parent = NULL;
 
-    if (node) {
+    dtor(node->left);
+    node->left = NULL;
 
-        dtor(node->left);
-        node->left = NULL;
-
-        dtor(node->right);
-        node->right = NULL;
-        free(node);
-    }
+    dtor(node->right);
+    node->right = NULL;
+    free(node);
 }
 
 void close_file() {

@@ -1,5 +1,23 @@
 #include "../include/file.hpp"
 
+
+void create_file_path(char *FILE_PROG, char *path, char *name_file) {
+    assert(path      != nullptr && "null pointer");
+    assert(name_file != nullptr && "null pointer");
+    assert(FILE_PROG != nullptr && "null pointer");
+
+    char *save_point = FILE_PROG;
+
+    for (; *path != '\0'; path++, save_point++) {
+        *save_point = *path;
+    }
+    for (; *name_file != '\0'; name_file++, save_point++) {
+        *save_point = *name_file;
+    }
+    *save_point = '\0';
+
+}
+
 char *read_file(const char *TEXT, char *text_buf) {
     FILE *file_input = fopen(TEXT, "r");
 
@@ -43,8 +61,6 @@ long int count_symbols(FILE *file_input)  {
 
     return number;
 }
-
-
 
 char *program_text_normalize(char *text)  {
     assert(text != nullptr && "null pointer");

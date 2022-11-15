@@ -191,8 +191,7 @@ elem_data_t stack_pop(stack *stk) {
 
     stk->size--;
     elem_data_t value = stk->data[stk->size];
-    path_search_elem poison = {NULL, 0};
-    stk->data[stk->size] = poison;
+    stk->data[stk->size] = NULL;
     if (stk->size + 1 == stk->capacity/MULTIPLE && stk->size >= 10) 
         stack_resize(stk);
     

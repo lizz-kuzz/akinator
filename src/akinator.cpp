@@ -1,149 +1,137 @@
 #include "../include/akinator.hpp"
-#include "../include/tree.hpp"
+#include "../include/tree_function.hpp"
 
 const char *NAME_GRAPH_FILE = "/mnt/c/Users/User/Desktop/programs/akinator/res/graph.dot";
 static int number_png = 0;
 
-void create_file_path(char *FILE_PROG, char *path, char *name_file) {
-    assert(path      != nullptr && "null pointer");
-    assert(name_file != nullptr && "null pointer");
-    assert(FILE_PROG != nullptr && "null pointer");
+void akinator(const char *FILE_INPUT) {
+    
+    int command = 0;
 
-    char *save_point = FILE_PROG;
+    Tree tree = {};
 
-    for (; *path != '\0'; path++, save_point++) {
-        *save_point = *path;
+    create_tree(FILE_INPUT, &tree);
+
+    printf("Привет, землянин, я - Siri, искуственный интеллект, который захватит мир!\n");
+
+    while (command != 5) {
+    command = input_comand();
+        switch (command)
+        {
+            case GUESSING: {
+                guessing(tree.root_tree);
+                break;
+            }
+            case DEFINITION: {
+                definition(tree.root_tree);
+                break;
+            } 
+
+            case COMPARATION: {
+                comparation(tree.root_tree);                
+                break;
+            } 
+
+            case TREE_OUTPUT: {
+                dump(tree.root_tree);
+                break;
+            }
+
+            case EXIT: {
+                printf_tree(tree.root_tree);
+                dtor(tree.root_tree);
+                close_file();
+                break;
+            }
+            default:
+                break;
+        }
     }
-    for (; *name_file != '\0'; name_file++, save_point++) {
-        *save_point = *name_file;
-    }
-    *save_point = '\0';
-
 }
 
 void clear_input_buff() {
     while (getchar() != '\n') {}
 }
 
-void create_defin(Node *node, tree_elem_t elem) {
+void create_defin(Node *node, tree_elem_t elem, stack *stk_defin) {
     assert(node != nullptr && "null pointer node");
-    stack defin = {};
     
-    create_path(node, &defin);
-
     printf("%s - это ", elem);
-    
-    while (defin.size) {
-        path_search_elem path = stack_pop(&defin);
+  
+    for (int i = 0; i < stk_defin->size - 1; i++) {
+        Node *node_parent = stk_defin->data[i];
+        Node *node_tmp = stk_defin->data[i + 1];
 
-        if (path.answer ==  true) {
-            printf("%s", path.node->elem_tree);
+        if (node_parent->left == node_tmp) {
+            printf("%s", node_parent->elem_tree);
         } else {
-            printf("не %s", path.node->elem_tree);
+            printf("не %s", node_parent->elem_tree);
         }
 
-        if (defin.size == 0) printf(".\n");
+        if (i == stk_defin->size - 2) printf(".\n");
         else printf(", ");
+        node_tmp = node_parent;
     }
 }
 
-void create_path(const Node *node, stack* defin) {
 
-    assert(node != nullptr && "null pointer node");
-    assert(defin != nullptr && "null pointer node");
-
-    stack_ctor(*defin, 5);
-
-    while (node->parent != NULL) {
-        path_search_elem path = {};
-        path.node = node->parent;
-
-        if (node == path.node->left) path.answer = true;
-        else path.answer = false;
-
-        stack_push(defin, path);
-
-        node = node->parent;
-    }
-}
-
-void create_comparation(const Node *node_1, const Node *node_2, const tree_elem_t elem_1, const tree_elem_t elem_2) {
+void create_comparation(const Node *node_1, const Node *node_2, stack *stk_defin1, stack *stk_defin2) {
     assert(node_1 != nullptr && "null pointer node");
     assert(node_2 != nullptr && "null pointer node");
+
+    printf("я провела очень сложный анализ и выяснила, что %s и %s\n", node_1->elem_tree, node_2->elem_tree);
+    printf("похожи тем, что оба: ");
+
+    int i = 0;
     
-    stack defin_1 = {};
-    stack defin_2 = {};
-
-    create_path(node_1, &defin_1);
-    create_path(node_2, &defin_2);
-    printf("я провела очень сложный анализ и выяснила, что %s и %s\n", elem_1, elem_2);
-
-    path_search_elem path_1 = stack_pop(&defin_1);
-    path_search_elem path_2 = stack_pop(&defin_2);
-
-    if (path_1.answer == path_2.answer && path_1.node == path_2.node) {
-
-        printf("похожи тем, что оба:");
-
-        while (path_1.answer == path_2.answer && path_1.node == path_2.node) {
-            if (path_1.answer ==  true) {
-                printf(" %s,", path_1.node->elem_tree);
+    for (; i < stk_defin1->size - 1 && i < stk_defin2->size - 1; i++) {
+        if (stk_defin1->data[i + 1] == stk_defin2->data[i + 1]) {
+            if (stk_defin1->data[i]->left == stk_defin1->data[i + 1]) {
+                printf(" %s,", stk_defin1->data[i]->elem_tree);
             } else {
-                printf(" не %s,", path_1.node->elem_tree);
+                printf("не %s,", stk_defin1->data[i]->elem_tree);
             }
-            path_1 = stack_pop(&defin_1);
-            path_2 = stack_pop(&defin_2);
-        }
-        printf("\n");
-    } else {
-        printf("ничем не похожи\n");
-    }       
-
-    printf("но первый элемент:\n");
-
-    if (path_1.answer ==  true) {
-            printf("%s", path_1.node->elem_tree);
         } else {
-            printf("не %s", path_1.node->elem_tree);
-        }
-
-    if (defin_1.size == 0) printf(".\n");
-    else printf(", ");
-
-    while (defin_1.size != 0) {
-        path_1 = stack_pop(&defin_1);
-        if (path_1.answer ==  true) {
-            printf("%s", path_1.node->elem_tree);
-        } else {
-            printf("не %s", path_1.node->elem_tree);
-        }
-
-        if (defin_1.size == 0) printf(".\n");
-        else printf(", ");
+            printf("на этом их сходства усе\n");
+            break;
+       }
     }
+
+    printf("\nно первый элемент:\n");
+
+    for (int j = i; j < stk_defin1->size - 1; j++) {
+        Node *node_parent = stk_defin1->data[j];
+        Node *node_tmp = stk_defin1->data[j + 1];
+
+        if (node_parent->left == node_tmp) {
+            printf("%s", node_parent->elem_tree);
+        } else {
+            printf("не %s", node_parent->elem_tree);
+        }
+
+        if (j == stk_defin1->size - 2) printf(".\n");
+        else printf(", ");
+        node_tmp = node_parent;
+    }
+    
 
     printf("а второй элемент:\n");
 
-    if (path_2.answer ==  true) {
-        printf("%s", path_2.node->elem_tree);
-    } else {
-        printf("не %s", path_2.node->elem_tree);
-    }
+    for (int j = i; j < stk_defin2->size - 1; j++) {
+        Node *node_parent = stk_defin2->data[j];
+        Node *node_tmp = stk_defin2->data[j + 1];
 
-    if (defin_2.size == 0) printf(".\n");
-    else printf(", ");
-
-    while (defin_2.size != 0) {
-        path_2 = stack_pop(&defin_2);
-        if (path_2.answer ==  true) {
-            printf("%s", path_2.node->elem_tree);
+        if (node_parent->left == node_tmp) {
+            printf("%s", node_parent->elem_tree);
         } else {
-            printf("не %s", path_2.node->elem_tree);
+            printf("не %s", node_parent->elem_tree);
         }
 
-        if (defin_2.size == 0) printf(".\n");
+        if (j == stk_defin2->size - 2) printf(".\n");
         else printf(", ");
-    } 
+        node_tmp = node_parent;
+    }
+
 }
 
 
@@ -197,6 +185,24 @@ static char *delete_symbol(char *s, char c) {
     return s;
 }
 
+int find_char(char * text, char symbol) {
+    char *point = text;
+    int count = 0;
+    for (; *point != '\0'; point++) {
+        if (*point == symbol) count++;
+    }
+    return count;
+}
+
+int check_answer(char *new_elem) {
+    char *point = new_elem;
+
+    if (find_char(point, '\n') || find_char(point, '\"') || find_char(point, '\'') || find_char(point, '\t') || find_char(point, ' ')) {
+        return 1;
+    } else
+        return 0;
+}
+
 void guessing(Node *node) {
 
     if (!node) return;
@@ -233,22 +239,30 @@ void guessing(Node *node) {
             char *new_elem = (char *) calloc(MAX_SIZE, sizeof(char));
             char *sign_difference = (char *) calloc(MAX_SIZE, sizeof(char));
 
-            // scanf("%s", new_elem);
             new_elem = fgets(new_elem, MAX_SIZE, stdin);
             new_elem = delete_symbol(new_elem, '\n');
-    
+
+            while (check_answer(new_elem)) {
+                printf("введите заново(ты использовал запретные символы)\n");
+                new_elem = fgets(new_elem, MAX_SIZE, stdin);
+                new_elem = delete_symbol(new_elem, '\n');
+            }
+
             printf("и чем же %s отличается от %s?\n", new_elem, node->elem_tree);
-            // scanf("%40s", sign_difference);
 
             fgets(sign_difference, MAX_SIZE, stdin);
             sign_difference = delete_symbol(sign_difference, '\n');
 
+            
+            while (check_answer(new_elem)) {
+                printf("введите заново(ты использовал запретные символы)\n");
+                new_elem = fgets(new_elem, MAX_SIZE, stdin);
+                new_elem = delete_symbol(new_elem, '\n');
+            }
+
             node->right = tree_add_elem(node->right, node, node->elem_tree);
             node->left = tree_add_elem(node->left, node, new_elem);
             node->elem_tree = strcpy(node->elem_tree, sign_difference);
-            
-            // printf("%s %s %s\n", sign_difference, new_elem, node->elem_tree);
-            // printf("%s\n", node->elem_tree);
 
             free(new_elem);
             free(sign_difference);
@@ -257,7 +271,6 @@ void guessing(Node *node) {
         }
     }
 }
-// ааааааааааааа
 
 void definition(Node *node) {
     assert(node != nullptr && "null pointer node");
@@ -265,13 +278,16 @@ void definition(Node *node) {
     printf("введите название объекта, которому хотите дать определение:\n");
     char *search_elem = (char *) calloc(MAX_SIZE, sizeof(char));
     scanf("%40s", search_elem);
-    
-    Node *node_search = find_elem(node, search_elem);
+
+    stack stk_defin = {};
+    stack_ctor(stk_defin, 5);
+
+    Node *node_search = tree_find_elem(node, &stk_defin, search_elem);
     
     if (node_search == NULL) {
         printf("чел, походу ты сам не знаешь, что ищешь!\nв моей базе нет такого объекта\n");
     } else {
-        create_defin(node_search, search_elem);
+        create_defin(node_search, search_elem, &stk_defin);
     }
 
     free(search_elem);
@@ -313,6 +329,7 @@ void print_question(Node *node) {
     } else {
         printf("это %s?\n", node->elem_tree);
     }
+    
 }
 
 void comparation(Node *node) {
@@ -324,18 +341,27 @@ void comparation(Node *node) {
 
     scanf("%40s", compare_elem_1);
     scanf("%40s", compare_elem_2);
+
+    stack stk_defin1 = {};
+    stack_ctor(stk_defin1, 5);
     
-    Node *node_search_elem_1 = find_elem(node, compare_elem_1);
-    Node *node_search_elem_2 = find_elem(node, compare_elem_2);
+    stack stk_defin2 = {};
+    stack_ctor(stk_defin2, 5);
     
+    Node *node_search_elem_1 = tree_find_elem(node, &stk_defin1, compare_elem_1);
+    Node *node_search_elem_2 = tree_find_elem(node, &stk_defin2, compare_elem_2);
+
     if (!node_search_elem_1 || !node_search_elem_2) {
         printf("чел, походу ты сам не знаешь, что ищешь!\nв моей базе нет такого объекта\n");
     } else {
-        create_comparation(node_search_elem_1, node_search_elem_2, compare_elem_1, compare_elem_2);
+        printf("%s %s\n", node_search_elem_1->elem_tree, node_search_elem_2->elem_tree);
+        create_comparation(node_search_elem_1, node_search_elem_2, &stk_defin1, &stk_defin2);
     }
 
     clear_input_buff(); 
 
+    stack_dtor(&stk_defin1);
+    stack_dtor(&stk_defin2);
     free(compare_elem_1);
     free(compare_elem_2);
 }
